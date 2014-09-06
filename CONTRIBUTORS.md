@@ -22,3 +22,4 @@ do not merit addition as a contributor. Thank you in advance!
 - Levi Morrison
 - Niklas Keller
 - Bob Weinand
+- Ronnie Skansing
