@@ -239,4 +239,72 @@ class RequestTest extends \PHPUnit_Framework_TestCase {
         // Call again to get coverage retrieving cached body data
         $this->assertEquals($body, $request->getBody());
     }
+
+    public function testGetStringQueryParameterReturnsArrayFromGlobalGet() {
+        list($_server, $_get, $_post, $_files, $_cookie, $_input) = $this->getRequiredServerVars();
+        $_get['Foo'] = 'bar';
+        $request = new Request($_server, $_get, $_post, $_files, $_cookie, $_input);
+        $this->assertSame($_get['Foo'], $request->getStringQueryParameter('Foo'));
+    }
+
+    /**
+    *   @expectedException Arya\UserInputException
+    */
+    public function testGetStringQueryParameterThrowsUserInputExceptionIfFieldNotArray() {
+        list($_server, $_get, $_post, $_files, $_cookie, $_input) = $this->getRequiredServerVars();
+        $_get['Foo'] = ['bar','baz'];
+        $request = new Request($_server, $_get, $_post, $_files, $_cookie, $_input);
+        $request->getStringQueryParameter('Foo');
+    }
+
+    public function testGetArrayQueryParameterReturnsArrayFromGlobalGet() {
+        list($_server, $_get, $_post, $_files, $_cookie, $_input) = $this->getRequiredServerVars();
+        $_get['Foo'] = ['bar','baz'];
+        $request = new Request($_server, $_get, $_post, $_files, $_cookie, $_input);
+        $this->assertSame($_get['Foo'], $request->getArrayQueryParameter('Foo'));
+    }
+
+    /**
+    *   @expectedException Arya\UserInputException
+    */
+    public function testGetArrayQueryParameterThrowsUserInputExceptionIfFieldNotArray() {
+        list($_server, $_get, $_post, $_files, $_cookie, $_input) = $this->getRequiredServerVars();
+        $_get['Foo'] = 'bar';
+        $request = new Request($_server, $_get, $_post, $_files, $_cookie, $_input);
+        $request->getArrayQueryParameter('Foo');
+    }
+
+    public function  testGetArrayFormFieldReturnsArrayFromGlobalPost() {
+        list($_server, $_get, $_post, $_files, $_cookie, $_input) = $this->getRequiredServerVars();
+        $_post['Foo'] = ['bar', 'baz'];
+        $request = new Request($_server, $_get, $_post, $_files, $_cookie, $_input);
+        $this->assertSame($_post['Foo'], $request->getArrayFormField('Foo'));
+    }
+
+    /**
+    * @expectedException Arya\UserInputException
+    */
+    public function testGetArrayFormFieldThrowsUserInputExceptionIfFieldNotArray() {
+        list($_server, $_get, $_post, $_files, $_cookie, $_input) = $this->getRequiredServerVars();
+        $_post['Foo'] = 'bar';
+        $request = new Request($_server, $_get, $_post, $_files, $_cookie, $_input);
+        $request->getArrayFormField('Foo');
+    }
+
+    public function testGetStringFormFieldReturnsStringFromGlobalPost() {
+        list($_server, $_get, $_post, $_files, $_cookie, $_input) = $this->getRequiredServerVars();
+        $_post['Foo'] = 'bar';
+        $request = new Request($_server, $_get, $_post, $_files, $_cookie, $_input);
+        $this->assertSame($_post['Foo'], $request->getStringFormField('Foo'));
+    }
+
+    /**
+    * @expectedException Arya\UserInputException
+    */
+    public function testGetStringFormFieldThrowsUserInputExceptionIfNotString() {
+        list($_server, $_get, $_post, $_files, $_cookie, $_input) = $this->getRequiredServerVars();
+        $_post['Foo'] = 42;
+        $request = new Request($_server, $_get, $_post, $_files, $_cookie, $_input);
+        $request->getStringFormField('Foo');
+    }
 }
