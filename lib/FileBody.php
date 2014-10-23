@@ -7,6 +7,10 @@ class FileBody implements Body {
     private $path;
     private $options = [];
 
+    /**
+     * @param string $path
+     * @throws \RuntimeException
+     */
     public function __construct($path) {
         if (!is_string($path)) {
             throw new \RuntimeException(
@@ -25,10 +29,16 @@ class FileBody implements Body {
         }
     }
 
+    /**
+     * @return void
+     */
     public function __invoke() {
         $this->send();
     }
 
+    /**
+     * @return void
+     */
     public function send() {
         if (@readfile($this->path) === FALSE) {
             $lastError = error_get_last();
@@ -54,6 +64,9 @@ class FileBody implements Body {
      */
     public function setOptions() {}
 
+    /**
+    * @return string Returns the path
+    */
     public function getPath() {
         return $this->path;
     }

@@ -19,6 +19,9 @@ class Response implements \ArrayAccess {
         'httponly' => FALSE
     ];
 
+    /**
+     * @param array $map
+     */
     public function __construct(array $map = []) {
         foreach ($map as $key => $value) {
             $this->offsetSet($key, $value);
@@ -71,7 +74,7 @@ class Response implements \ArrayAccess {
      * Existing values matching the specified field are replaced.
      * Header field names are NOT case-sensitive.
      *
-     * @param array
+     * @param array $headerArray
      * @throws \InvalidArgumentException
      * @return Response Returns the current object instance
      */
@@ -567,7 +570,13 @@ class Response implements \ArrayAccess {
     }
 
     /**
+     * Imports values from mapped array
      *
+     * Calling importArray() will clear all previosly assigned values before assigning those from the
+     * mapped array.
+     *
+     * @param array $response
+     * @return Response Returns the current object instance
      */
     public function importArray(array $response) {
         $this->clear();
@@ -579,7 +588,9 @@ class Response implements \ArrayAccess {
     }
 
     /**
+     * Returns the current object instance as a mapped array
      *
+     * @return array
      */
     public function toArray() {
         return array_merge([
@@ -607,6 +618,13 @@ class Response implements \ArrayAccess {
         return $this;
     }
 
+    /**
+     * Sets a specific offset
+     *
+     * @param offset $string
+     * @param value $value
+     * @return void
+     */
     public function offsetSet($offset, $value) {
         switch ($offset) {
             case 'status':
@@ -626,6 +644,12 @@ class Response implements \ArrayAccess {
         }
     }
 
+    /**
+     * Check if a specific offset exists
+     *
+     * @param string $offset
+     * @return bool
+     */
     public function offsetExists($offset) {
         switch ($offset) {
             case 'status': // fallthrough on purpose
@@ -641,6 +665,14 @@ class Response implements \ArrayAccess {
         return $exists;
     }
 
+    /**
+    * Unsets a specific offset to default value.
+    *
+    * Deletes the offset if it is a Non-Standard Response Key
+    *
+    * @param string $offset
+    * @return void
+    */
     public function offsetUnset($offset) {
         switch ($offset) {
             case 'status':
@@ -660,6 +692,13 @@ class Response implements \ArrayAccess {
         }
     }
 
+    /**
+     * Gets a specific offset
+     *
+     * @param string $offset
+     * @throws \DomainException
+     * @return mixed
+     */
     public function offsetGet($offset) {
         switch ($offset) {
             case 'status':

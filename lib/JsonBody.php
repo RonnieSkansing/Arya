@@ -6,6 +6,11 @@ class JsonBody implements Body {
 
     private $json;
 
+    /**
+     * @param mixed $data
+     * @param int $flags
+     * @param int $depth
+     */
     public function __construct($data, $flags = 0, $depth = 512) {
         if(PHP_VERSION_ID < 50500 && $depth != 512) {
             throw new \RuntimeException('depth parameter not available before PHP 5.5');
@@ -38,10 +43,19 @@ class JsonBody implements Body {
         return isset($errors[$errorCode]) ? $errors[$errorCode] : "Unknown error ({$errorCode})";
     }
 
+    /**
+     * Outputs the json
+     * @return void
+     */
     public function __invoke() {
         echo $this->json;
     }
 
+    /**
+     * Retrives headers associated with json response
+     *
+     * @return array
+     */
     public function getHeaders() {
         return [
             'Content-Type' => 'application/json; charset=utf-8',

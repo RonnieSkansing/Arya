@@ -48,6 +48,10 @@ class Application {
         'session.save_path' => NULL
     ];
 
+    /**
+     * @param Injector $injector
+     * @param bool $debug
+     */
     public function __construct(Injector $injector = NULL, $debug = NULL) {
         $this->injector = $injector ?: new Provider;
 

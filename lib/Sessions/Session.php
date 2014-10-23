@@ -37,11 +37,24 @@ class Session implements \ArrayAccess, \Iterator {
         'strict' => TRUE
     ];
 
+    /**
+     * @param \Arya\Request $request
+     * @param SessionHandler $handler
+     */
     public function __construct(Request $request, SessionHandler $handler = NULL) {
         $this->request = $request;
         $this->handler = $handler ?: new FileSessionHandler;
     }
 
+    /**
+     * Retrives a specific option
+     *
+     * Option keys are NOT case-sensitive.
+     *
+     * @param string $option
+     * @throws \DomainException
+     * @return mixed
+     */
     public function getOption($option) {
         $lcOption = strtolower($option);
         if (!isset($this->options[$lcOption])) {
@@ -53,12 +66,29 @@ class Session implements \ArrayAccess, \Iterator {
         return $this->options[$lcOption];
     }
 
+    /**
+     * Set multiple options
+     *
+     * Options keys are NOT case-sensitive.
+     *
+     * @param array $options
+     * @throws \DomainException|\InvalidArgumentException
+     * @return void
+     */
     public function setAllOptions(array $options) {
         foreach ($options as $option => $value) {
             $this->setOption($option, $value);
         }
     }
 
+    /**
+     * Set specific option
+     *
+     * @param string $option
+     * @param mixed $value
+     * @throws \DomainException|\InvalidArgumentException
+     * @return void
+     */
     public function setOption($option, $value) {
         switch (strtolower($option)) {
             case 'cookie_name':
@@ -202,6 +232,14 @@ class Session implements \ArrayAccess, \Iterator {
         $this->options['cache_limiter'] = $value;
     }
 
+    /**
+     * Checks if specific session field exists
+     *
+     * Starts the session if not already open.
+     *
+     * @param string $field
+     * @return bool
+     */
     public function has($field) {
         if (!$this->isOpen) {
             $this->open();
@@ -289,6 +327,15 @@ class Session implements \ArrayAccess, \Iterator {
         return $psrb;
     }
 
+    /**
+     * Retrieve a specific session field
+     *
+     * Starts the session if not already open.
+     *
+     * @param string $field
+     * @throws \DomainException
+     * @return mixed
+     */
     public function get($field) {
         if (!$this->isOpen) {
             $this->open();
@@ -303,6 +350,14 @@ class Session implements \ArrayAccess, \Iterator {
         }
     }
 
+    /**
+     * Retrieves all session data
+     *
+     * Starts the session if not already open.
+     *
+     * @throws SessionException
+     * @return array
+     */
     public function getAll() {
         if (!$this->isOpen) {
             $this->open();
@@ -339,6 +394,12 @@ class Session implements \ArrayAccess, \Iterator {
         }
     }
 
+    /**
+     * Persists the session data
+     *
+     * @throws SessionExceptoin
+     * @return void
+     */
     public function save() {
         if (!$this->needsSave) {
             return;
@@ -357,6 +418,12 @@ class Session implements \ArrayAccess, \Iterator {
         }
     }
 
+    /**
+     * Closes the session
+     *
+     * @throws SessionException
+     * @return void
+     */
     public function close() {
         if (!$this->isOpen) {
             return;
@@ -386,6 +453,11 @@ class Session implements \ArrayAccess, \Iterator {
         }
     }
 
+    /**
+     * Destroys the current session and starts a new
+     *
+     * @return void
+     */
     public function regenerate() {
         if ($oldSessionId = $this->sessionId) {
             $this->handler->close();
@@ -398,10 +470,22 @@ class Session implements \ArrayAccess, \Iterator {
         $this->sessionId = $this->generateSessionId();
     }
 
+    /**
+     * Checks if cookie has been altered and should be set
+     *
+     * @return bool
+     */
     public function shouldSetCookie() {
         return $this->wasAltered;
     }
 
+    /**
+     * Retrieves the cookie elements
+     *
+     * Cookie elements are cookie_name, sessionId, domain, path, expire, secure and httpOnly
+     *
+     * @return array
+     */
     public function getCookieElements() {
         return [
             $this->options['cookie_name'],

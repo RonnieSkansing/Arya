@@ -1,4 +1,4 @@
-<?php
+ <?php
 
 namespace Arya;
 
@@ -17,6 +17,14 @@ class Request implements \ArrayAccess, \Iterator {
     private $inMemoryBodyStreamSize = 2097152;
     private $isInputStreamCopied = FALSE;
 
+    /**
+     * @param array $_server
+     * @param array $_get
+     * @param array $_post
+     * @param array $_files
+     * @param array $_cookie
+     * @param resource $_input
+     */
     public function __construct(array $_server, array $_get, array $_post, array $_files, array $_cookie, $_input) {
         $this->processServer($_server);
 
@@ -85,6 +93,14 @@ class Request implements \ArrayAccess, \Iterator {
         return isset($this->headers[strtoupper($field)]);
     }
 
+    /**
+     * Gets a specific header value
+     *
+     * Header field names are NOT case-sensitive.
+     *
+     * @param string $field
+     * @return string
+     */
     public function getHeader($field) {
         $ucField = strtoupper($field);
         if (isset($this->headers[$ucField])) {
@@ -96,10 +112,23 @@ class Request implements \ArrayAccess, \Iterator {
         }
     }
 
+    /**
+     * Gets all headers
+     *
+     * @return array
+     */
     public function getAllHeaders() {
         return $this->headers;
     }
 
+    /**
+     * Checks if query parameter(s) exists
+     *
+     * if arguments are strings the function be used as a variadic.
+     *
+     * @param array|object|string $field
+     * @return bool
+     */
     public function hasQueryParameter($field) {
         $fields = (is_array($field) || is_object($field))
             ? $field
@@ -180,10 +209,21 @@ class Request implements \ArrayAccess, \Iterator {
         }
     }
 
+    /**
+     * Returns all query parameters
+     *
+     * @return array
+     */
     public function getAllQueryParameters() {
         return $this->query;
     }
 
+    /**
+     * Checks if specific form field exists
+     *
+     * @param string $field
+     * @return bool
+     */
     public function hasFormField($field) {
         return isset($this->form[$field]);
     }
@@ -254,14 +294,32 @@ class Request implements \ArrayAccess, \Iterator {
         }
     }
 
+    /**
+     * Gets all form fields
+     *
+     * @return array
+     */
     public function getAllFormFields() {
         return $this->form;
     }
 
+    /**
+     * Checks if a specific form file exists
+     *
+     * @param string $field
+     * @return bool
+     */
     public function hasFormFile($field) {
         return isset($this->files[$field]);
     }
 
+    /**
+     * Retrives a specific form file
+     *
+     * @param string $field
+     * @throws \DomainException
+     * @return array
+     */
     public function getFormFile($field) {
         if (isset($this->files[$field])) {
             return $this->files[$field];
@@ -272,14 +330,32 @@ class Request implements \ArrayAccess, \Iterator {
         }
     }
 
+    /**
+     * Retrives all form files
+     *
+     * @return array
+     */
     public function getAllFormFiles() {
         return $this->files;
     }
 
+    /**
+     * Check if specific cookie exists
+     *
+     * @param string $field
+     * @return bool
+     */
     public function hasCookie($field) {
         return isset($this->cookies[$field]);
     }
 
+    /**
+     * Retrives a specific cookie
+     *
+     * @param string $field
+     * @throws \DomainException
+     * @return int|string
+     */
     public function getCookie($field) {
         if (isset($this->cookies[$field])) {
             return $this->cookies[$field];
@@ -290,14 +366,29 @@ class Request implements \ArrayAccess, \Iterator {
         }
     }
 
+    /**
+     * Retrives all cookies
+     *
+     * @return array
+     */
     public function getAllCookies() {
         return $this->cookies;
     }
 
+    /**
+     * Checks for content in body
+     *
+     * @return bool
+     */
     public function hasBody() {
         return isset($this->bodyStream) || $this->body != "";
     }
 
+    /**
+     *  Retrives the body content
+     *
+     * @return string
+     */
     public function getBody() {
         if ($this->body != "") {
             $body = $this->body;
@@ -337,18 +428,43 @@ class Request implements \ArrayAccess, \Iterator {
         return $tmpStream;
     }
 
+    /**
+     * Retrives the body stream
+     *
+     * @return resource
+     */
     public function getBodyStream() {
         return $this->isInputStreamCopied ? $this->bodyStream : $this->getBody();
     }
 
+    /**
+     * Sets a specific offset for the server and environment information
+     *
+     * @param string $offset
+     * @param string $value
+     * @return void
+     */
     public function set($offset, $value) {
         $this->vars[$offset] = $value;
     }
 
+    /**
+     * Checks if a specific server or environment field exists
+     *
+     * @param string @field
+     * @return bool
+     */
     public function has($field) {
         return isset($this->vars[$field]);
     }
 
+    /**
+     * Retrives a specific field of server or environment info
+     *
+     * @param string $field
+     * @throws \DomainException
+     * @return string
+     */
     public function get($field) {
         if (isset($this->vars[$field])) {
             return $this->vars[$field];
@@ -359,10 +475,20 @@ class Request implements \ArrayAccess, \Iterator {
         }
     }
 
+    /**
+     * Retrives the requests server and environment info
+     *
+     * @return array
+     */
     public function all() {
         return $this->vars;
     }
 
+    /**
+     * Retrives if the request is encrypted
+     *
+     * @return bool
+     */
     public function isEncrypted() {
         return $this->isEncrypted;
     }
